@@ -1,15 +1,34 @@
 import streamlit as st
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
-# Configuración
 st.set_page_config(page_title="CRM Clínica de Ortopedia", layout="wide")
 st.title("📋 CRM Clínica de Ortopedia")
 
-# Conexión a base de datos SQLite (local)
 engine = create_engine("sqlite:///crm_clinica.db")
 
-# --- Cargar datos ---
+with engine.begin() as conn:
+    conn.execute(text("""
+        CREATE TABLE IF NOT EXISTS aseguradoras (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT,
+            nit TEXT,
+            contacto TEXT
+        );
+    """))
+    conn.execute(text("""
+        CREATE TABLE IF NOT EXISTS contratos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT,
+            fecha_inicio TEXT,
+            fecha_fin TEXT,
+            tipo_tarifa TEXT,
+            techo_mensual REAL,
+            condiciones TEXT,
+            aseguradora_id INTEGER
+        );
+    """))
+
 @st.cache_data
 def cargar_datos():
     aseguradoras = pd.read_sql("SELECT * FROM aseguradoras", engine)
@@ -18,7 +37,6 @@ def cargar_datos():
 
 aseguradoras, contratos = cargar_datos()
 
-# --- Pestañas ---
 tab1, tab2, tab3 = st.tabs(["🔍 Contratos", "📈 Informes", "➕ Nueva aseguradora"])
 
 with tab1:
@@ -36,7 +54,6 @@ with tab2:
     st.metric("Total aseguradoras", len(resumen))
     st.dataframe(resumen)
 
-    # Vencimientos próximos
     from datetime import datetime, timedelta
     contratos["fecha_fin"] = pd.to_datetime(contratos["fecha_fin"])
     proximos = contratos[contratos["fecha_fin"] <= datetime.today() + timedelta(days=30)]
