@@ -69,9 +69,11 @@ with tab3:
         submitted = st.form_submit_button("Guardar")
         if submitted:
             with engine.begin() as conn:
-                conn.execute(text("""
-                    INSERT INTO aseguradoras (nombre, nit, contacto)
-                    VALUES (:nombre, :nit, :contacto)
-                """), {"nombre": nombre, "nit": nit, "contacto": contacto})
+                conn.execute(
+                    text("""
+                        INSERT INTO aseguradoras (nombre, nit, contacto)
+                        VALUES (:nombre, :nit, :contacto)
+                    """), {"nombre": nombre, "nit": nit, "contacto": contacto}
+                )
             st.success("Aseguradora registrada correctamente")
             st.experimental_rerun()
