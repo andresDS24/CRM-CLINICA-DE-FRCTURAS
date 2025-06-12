@@ -76,4 +76,4 @@ with tab3:
                     """), {"nombre": nombre, "nit": nit, "contacto": contacto}
                 )
             st.success("Aseguradora registrada correctamente")
-            st.experimental_rerun()
+            st.rerun()
