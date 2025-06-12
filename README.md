@@ -1,7 +1,10 @@
-# Gestor de Proyectos para Clínica de Ortopedia
+# Gestor de Proyectos - Clínica de Ortopedia
 
-Ejecuta localmente con:
-```
+Este proyecto permite gestionar procesos, subprocesos, proyectos y tareas con seguimiento visual.
+
+## Instrucciones:
+
+```bash
 pip install -r requirements.txt
 streamlit run app.py
 ```
