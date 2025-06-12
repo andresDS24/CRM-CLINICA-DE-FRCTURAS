@@ -80,7 +80,8 @@ with st.sidebar.form("form_proceso"):
                     if nuevo_subproceso:
                         conn.execute(text("INSERT INTO subprocesos (nombre, proceso_id) VALUES (:nombre, :proc_id)"), {"nombre": nuevo_subproceso, "proc_id": proc_id})
                     st.success("Proceso y subproceso guardados.")
-                    st.rerun()
+st.cache_data.clear()
+st.rerun()
                 else:
                     st.error("❌ El proceso no se registró correctamente. Verifica si ya existe o si hubo un error de conexión.")
 
@@ -106,7 +107,8 @@ with st.sidebar.form("form_proyecto"):
                     VALUES (:nombre, :resp, :estado, :pid, :spid)
                 """), {"nombre": nombre_proy, "resp": responsable_proy, "estado": estado_proy, "pid": proc_id, "spid": subproc_id})
             st.success("Proyecto registrado.")
-            st.rerun()
+st.cache_data.clear()
+st.rerun()
 
 st.sidebar.subheader("📝 Registro de Tareas")
 
@@ -126,7 +128,8 @@ with st.sidebar.expander("✏️ Editar / Eliminar"):
                     WHERE nombre = :original
                 """), {"nombre": nuevo_nombre, "resp": nuevo_resp, "estado": nuevo_estado, "original": proyecto_editar})
             st.success("Proyecto actualizado correctamente")
-            st.rerun()
+st.cache_data.clear()
+st.rerun()
 
     st.markdown("### ✍️ Edición de Tareas")
     if not tareas.empty:
@@ -142,7 +145,8 @@ with st.sidebar.expander("✏️ Editar / Eliminar"):
                     WHERE descripcion = :original
                 """), {"desc": nuevo_desc, "resp": nuevo_resp_tarea, "estado": nuevo_estado_tarea, "original": tarea_editar})
             st.success("Tarea actualizada correctamente")
-            st.rerun()
+st.cache_data.clear()
+st.rerun()
     if not proyectos.empty:
         editar_id = st.selectbox("Proyecto a editar/eliminar", proyectos['nombre'])
         if st.button("🗑 Eliminar Proyecto"):
@@ -150,7 +154,8 @@ with st.sidebar.expander("✏️ Editar / Eliminar"):
                 conn.execute(text("DELETE FROM tareas WHERE proyecto_id = (SELECT id FROM proyectos WHERE nombre = :nombre)"), {"nombre": editar_id})
                 conn.execute(text("DELETE FROM proyectos WHERE nombre = :nombre"), {"nombre": editar_id})
             st.success("Proyecto y tareas eliminados")
-            st.rerun()
+st.cache_data.clear()
+st.rerun()
     if not procesos.empty:
         eliminar_proc = st.selectbox("Proceso a eliminar", procesos['nombre'])
         if st.button("🗑 Eliminar Proceso"):
@@ -158,14 +163,16 @@ with st.sidebar.expander("✏️ Editar / Eliminar"):
                 conn.execute(text("DELETE FROM subprocesos WHERE proceso_id = (SELECT id FROM procesos WHERE nombre = :nombre)"), {"nombre": eliminar_proc})
                 conn.execute(text("DELETE FROM procesos WHERE nombre = :nombre"), {"nombre": eliminar_proc})
             st.success("Proceso y subprocesos eliminados")
-            st.rerun()
+st.cache_data.clear()
+st.rerun()
     if not tareas.empty:
         eliminar_tarea = st.selectbox("Tarea a eliminar", tareas['descripcion'])
         if st.button("🗑 Eliminar Tarea"):
             with engine.begin() as conn:
                 conn.execute(text("DELETE FROM tareas WHERE descripcion = :desc"), {"desc": eliminar_tarea})
             st.success("Tarea eliminada")
-            st.rerun()
+st.cache_data.clear()
+st.rerun()
 with st.sidebar.form("form_tarea"):
     proyectos_disp = proyectos['nombre'].tolist() if not proyectos.empty else []
     proyecto_sel = st.selectbox("Proyecto", proyectos_disp)
@@ -194,7 +201,8 @@ with st.sidebar.form("form_tarea"):
                     "estado": estado
                 })
             st.success("Tarea registrada.")
-            st.rerun()
+st.cache_data.clear()
+st.rerun()
 
 if tareas.empty:
     st.warning("⚠️ No hay tareas registradas. Comienza agregando tareas desde la barra lateral.")
