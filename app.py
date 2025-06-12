@@ -74,3 +74,65 @@ st.dataframe(procesos.drop(columns=["id"]))
 st.markdown("### Subprocesos")
 st.dataframe(subprocesos.merge(procesos, left_on="proceso_id", right_on="id", suffixes=("", "_proc"))
             .drop(columns=["id_proc", "proceso_id"]).rename(columns={"nombre_proc": "Proceso"}))
+
+# --- Filtros para informes ---
+st.subheader("📌 Filtros de avance de tareas")
+col1, col2 = st.columns(2)
+with col1:
+    filtro_fecha_inicio = st.date_input("Desde", value=pd.to_datetime("2024-01-01"))
+with col2:
+    filtro_fecha_fin = st.date_input("Hasta", value=pd.to_datetime("today"))
+
+filtro_responsable = st.selectbox("Filtrar por responsable", opciones_responsables := ['Todos'] + sorted(tareas['responsable'].dropna().unique().tolist()) if not tareas.empty else ['Todos'])
+
+filtro_data = tareas.copy()
+filtro_data['fecha_inicio'] = pd.to_datetime(filtro_data['fecha_inicio'], errors='coerce')
+filtro_data = filtro_data[(filtro_data['fecha_inicio'] >= pd.to_datetime(filtro_fecha_inicio)) &
+                           (filtro_data['fecha_inicio'] <= pd.to_datetime(filtro_fecha_fin))]
+if filtro_responsable != 'Todos':
+    filtro_data = filtro_data[filtro_data['responsable'] == filtro_responsable]
+
+filtro_estado = filtro_data.groupby(['estado']).size().reset_index(name='conteo')
+st.markdown("### 🔍 Resumen filtrado")
+st.dataframe(filtro_estado)
+
+# --- Visualización gráfica interactiva ---
+import plotly.express as px
+
+if not filtro_data.empty:
+    st.subheader("📈 Gráfico de avance por responsable")
+    avance_responsable = filtro_data.groupby(['responsable', 'estado']).size().reset_index(name='tareas')
+    fig = px.bar(avance_responsable, x='responsable', y='tareas', color='estado', title='Estado de tareas por responsable')
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.subheader("🗓️ Diagrama de Gantt por proyecto")
+    filtro_data['fecha_fin'] = pd.to_datetime(filtro_data['fecha_fin'], errors='coerce')
+    filtro_data['descripcion'] = filtro_data['descripcion'].fillna('')
+    fig_gantt = px.timeline(
+        filtro_data,
+        x_start='fecha_inicio',
+        x_end='fecha_fin',
+        y='descripcion',
+        color='estado',
+        title='Tareas programadas',
+        hover_data=['responsable']
+    )
+    fig_gantt.update_yaxes(autorange="reversed")
+    st.plotly_chart(fig_gantt, use_container_width=True)
+
+# --- Panel de gestión y exportación ---
+st.subheader("📊 Exportar avance de tareas")
+if not tareas_estado.empty:
+    st.download_button("📥 Descargar avance en Excel", data=tareas_estado.to_csv(index=False).encode('utf-8'), file_name="avance_tareas.csv", mime="text/csv")
+
+st.subheader("🛠️ Panel de administración de tareas")
+if not tareas.empty:
+    tarea_a_eliminar = st.selectbox("Selecciona una tarea para eliminar", tareas["descripcion"] + " (ID: " + tareas["id"].astype(str) + ")")
+    if st.button("❌ Eliminar tarea"):
+        id_tarea = int(tarea_a_eliminar.split("ID: ")[-1][:-1])
+        with engine.begin() as conn:
+            conn.execute(text("DELETE FROM tareas WHERE id = :id"), {"id": id_tarea})
+        st.success("Tarea eliminada correctamente")
+        st.experimental_rerun()
+else:
+    st.info("No hay tareas disponibles para gestionar.")
