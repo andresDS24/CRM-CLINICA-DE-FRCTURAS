@@ -109,6 +109,63 @@ with st.sidebar.form("form_proyecto"):
             st.experimental_rerun()
 
 st.sidebar.subheader("📝 Registro de Tareas")
+
+st.sidebar.subheader("⚙️ Gestión de Datos")
+with st.sidebar.expander("✏️ Editar / Eliminar"):
+    st.markdown("### ✍️ Edición de Proyectos")
+    if not proyectos.empty:
+        proyecto_editar = st.selectbox("Selecciona un proyecto para editar", proyectos['nombre'], key="edit_proy")
+        nuevo_nombre = st.text_input("Nuevo nombre del proyecto", key="nuevo_nombre")
+        nuevo_resp = st.text_input("Nuevo responsable", key="nuevo_resp")
+        nuevo_estado = st.selectbox("Nuevo estado", ["Pendiente", "En curso", "Finalizado"], key="nuevo_estado")
+        if st.button("💾 Guardar cambios en proyecto"):
+            with engine.begin() as conn:
+                conn.execute(text("""
+                    UPDATE proyectos
+                    SET nombre = :nombre, responsable = :resp, estado = :estado
+                    WHERE nombre = :original
+                """), {"nombre": nuevo_nombre, "resp": nuevo_resp, "estado": nuevo_estado, "original": proyecto_editar})
+            st.success("Proyecto actualizado correctamente")
+            st.experimental_rerun()
+
+    st.markdown("### ✍️ Edición de Tareas")
+    if not tareas.empty:
+        tarea_editar = st.selectbox("Selecciona una tarea para editar", tareas['descripcion'], key="edit_tarea")
+        nuevo_desc = st.text_input("Nueva descripción", key="nuevo_desc")
+        nuevo_resp_tarea = st.text_input("Nuevo responsable tarea", key="nuevo_resp_tarea")
+        nuevo_estado_tarea = st.selectbox("Nuevo estado", ["Pendiente", "En curso", "Finalizada"], key="nuevo_estado_tarea")
+        if st.button("💾 Guardar cambios en tarea"):
+            with engine.begin() as conn:
+                conn.execute(text("""
+                    UPDATE tareas
+                    SET descripcion = :desc, responsable = :resp, estado = :estado
+                    WHERE descripcion = :original
+                """), {"desc": nuevo_desc, "resp": nuevo_resp_tarea, "estado": nuevo_estado_tarea, "original": tarea_editar})
+            st.success("Tarea actualizada correctamente")
+            st.experimental_rerun()
+    if not proyectos.empty:
+        editar_id = st.selectbox("Proyecto a editar/eliminar", proyectos['nombre'])
+        if st.button("🗑 Eliminar Proyecto"):
+            with engine.begin() as conn:
+                conn.execute(text("DELETE FROM tareas WHERE proyecto_id = (SELECT id FROM proyectos WHERE nombre = :nombre)"), {"nombre": editar_id})
+                conn.execute(text("DELETE FROM proyectos WHERE nombre = :nombre"), {"nombre": editar_id})
+            st.success("Proyecto y tareas eliminados")
+            st.experimental_rerun()
+    if not procesos.empty:
+        eliminar_proc = st.selectbox("Proceso a eliminar", procesos['nombre'])
+        if st.button("🗑 Eliminar Proceso"):
+            with engine.begin() as conn:
+                conn.execute(text("DELETE FROM subprocesos WHERE proceso_id = (SELECT id FROM procesos WHERE nombre = :nombre)"), {"nombre": eliminar_proc})
+                conn.execute(text("DELETE FROM procesos WHERE nombre = :nombre"), {"nombre": eliminar_proc})
+            st.success("Proceso y subprocesos eliminados")
+            st.experimental_rerun()
+    if not tareas.empty:
+        eliminar_tarea = st.selectbox("Tarea a eliminar", tareas['descripcion'])
+        if st.button("🗑 Eliminar Tarea"):
+            with engine.begin() as conn:
+                conn.execute(text("DELETE FROM tareas WHERE descripcion = :desc"), {"desc": eliminar_tarea})
+            st.success("Tarea eliminada")
+            st.experimental_rerun()
 with st.sidebar.form("form_tarea"):
     proyectos_disp = proyectos['nombre'].tolist() if not proyectos.empty else []
     proyecto_sel = st.selectbox("Proyecto", proyectos_disp)
