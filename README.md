@@ -1,10 +1,17 @@
-# Gestor de Proyectos - Clínica de Ortopedia
+# Dashboard de Seguimiento de Proyectos
 
-Este proyecto permite gestionar procesos, subprocesos, proyectos y tareas con seguimiento visual.
+Plataforma interactiva para gestión y seguimiento de procesos, proyectos y tareas.
 
-## Instrucciones:
+## Instrucciones
 
-```bash
+1. Instala dependencias:
+```
 pip install -r requirements.txt
+```
+
+2. Ejecuta la app:
+```
 streamlit run app.py
 ```
+
+Incluye: diagrama de Gantt, filtros por fecha y responsable, semaforización y exportación.
