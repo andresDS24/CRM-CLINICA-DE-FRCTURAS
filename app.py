@@ -1,4 +1,5 @@
 # Dashboard de Seguimiento de Proyectos por Procesos y Subprocesos
+
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -164,7 +165,7 @@ with st.sidebar.expander("✏️ Editar / Eliminar"):
             with engine.begin() as conn:
                 conn.execute(text("DELETE FROM tareas WHERE descripcion = :desc"), {"desc": eliminar_tarea})
             st.success("Tarea eliminada")
-            st.rerun()
+            st.experimental_rerun()
 with st.sidebar.form("form_tarea"):
     proyectos_disp = proyectos['nombre'].tolist() if not proyectos.empty else []
     proyecto_sel = st.selectbox("Proyecto", proyectos_disp)
@@ -193,7 +194,7 @@ with st.sidebar.form("form_tarea"):
                     "estado": estado
                 })
             st.success("Tarea registrada.")
-            st.rerun()
+            st.experimental_rerun()
 
 
 
