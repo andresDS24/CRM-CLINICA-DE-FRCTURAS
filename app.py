@@ -80,7 +80,7 @@ with st.sidebar.form("form_proceso"):
                     if nuevo_subproceso:
                         conn.execute(text("INSERT INTO subprocesos (nombre, proceso_id) VALUES (:nombre, :proc_id)"), {"nombre": nuevo_subproceso, "proc_id": proc_id})
                     st.success("Proceso y subproceso guardados.")
-                    st.experimental_rerun()
+                    st.rerun()
                 else:
                     st.error("❌ El proceso no se registró correctamente. Verifica si ya existe o si hubo un error de conexión.")
 
