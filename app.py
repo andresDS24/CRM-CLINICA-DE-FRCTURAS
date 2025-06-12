@@ -106,7 +106,7 @@ with st.sidebar.form("form_proyecto"):
                     VALUES (:nombre, :resp, :estado, :pid, :spid)
                 """), {"nombre": nombre_proy, "resp": responsable_proy, "estado": estado_proy, "pid": proc_id, "spid": subproc_id})
             st.success("Proyecto registrado.")
-            st.experimental_rerun()
+            st.rerun()
 
 st.sidebar.subheader("📝 Registro de Tareas")
 
@@ -126,7 +126,7 @@ with st.sidebar.expander("✏️ Editar / Eliminar"):
                     WHERE nombre = :original
                 """), {"nombre": nuevo_nombre, "resp": nuevo_resp, "estado": nuevo_estado, "original": proyecto_editar})
             st.success("Proyecto actualizado correctamente")
-            st.experimental_rerun()
+            st.rerun()
 
     st.markdown("### ✍️ Edición de Tareas")
     if not tareas.empty:
