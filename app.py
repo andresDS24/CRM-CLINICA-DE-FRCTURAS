@@ -142,7 +142,7 @@ with st.sidebar.expander("✏️ Editar / Eliminar"):
                     WHERE descripcion = :original
                 """), {"desc": nuevo_desc, "resp": nuevo_resp_tarea, "estado": nuevo_estado_tarea, "original": tarea_editar})
             st.success("Tarea actualizada correctamente")
-            st.experimental_rerun()
+            st.rerun()
     if not proyectos.empty:
         editar_id = st.selectbox("Proyecto a editar/eliminar", proyectos['nombre'])
         if st.button("🗑 Eliminar Proyecto"):
@@ -150,7 +150,7 @@ with st.sidebar.expander("✏️ Editar / Eliminar"):
                 conn.execute(text("DELETE FROM tareas WHERE proyecto_id = (SELECT id FROM proyectos WHERE nombre = :nombre)"), {"nombre": editar_id})
                 conn.execute(text("DELETE FROM proyectos WHERE nombre = :nombre"), {"nombre": editar_id})
             st.success("Proyecto y tareas eliminados")
-            st.experimental_rerun()
+            st.rerun()
     if not procesos.empty:
         eliminar_proc = st.selectbox("Proceso a eliminar", procesos['nombre'])
         if st.button("🗑 Eliminar Proceso"):
@@ -158,14 +158,14 @@ with st.sidebar.expander("✏️ Editar / Eliminar"):
                 conn.execute(text("DELETE FROM subprocesos WHERE proceso_id = (SELECT id FROM procesos WHERE nombre = :nombre)"), {"nombre": eliminar_proc})
                 conn.execute(text("DELETE FROM procesos WHERE nombre = :nombre"), {"nombre": eliminar_proc})
             st.success("Proceso y subprocesos eliminados")
-            st.experimental_rerun()
+            st.rerun()
     if not tareas.empty:
         eliminar_tarea = st.selectbox("Tarea a eliminar", tareas['descripcion'])
         if st.button("🗑 Eliminar Tarea"):
             with engine.begin() as conn:
                 conn.execute(text("DELETE FROM tareas WHERE descripcion = :desc"), {"desc": eliminar_tarea})
             st.success("Tarea eliminada")
-            st.experimental_rerun()
+            st.rerun()
 with st.sidebar.form("form_tarea"):
     proyectos_disp = proyectos['nombre'].tolist() if not proyectos.empty else []
     proyecto_sel = st.selectbox("Proyecto", proyectos_disp)
@@ -194,7 +194,7 @@ with st.sidebar.form("form_tarea"):
                     "estado": estado
                 })
             st.success("Tarea registrada.")
-            st.experimental_rerun()
+            st.rerun()
 
 
 
