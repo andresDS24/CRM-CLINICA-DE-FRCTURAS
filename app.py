@@ -56,7 +56,6 @@ with engine.begin() as conn:
     """))
 
 @st.cache_data
-
 def cargar_datos():
     procesos = pd.read_sql("SELECT * FROM procesos", engine)
     subprocesos = pd.read_sql("SELECT * FROM subprocesos", engine)
