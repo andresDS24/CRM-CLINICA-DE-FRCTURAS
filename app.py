@@ -13,10 +13,13 @@ engine = create_engine("sqlite:///seguimiento.db")
 
 with engine.begin() as conn:
     conn.execute(text("""
-    CREATE TABLE IF NOT EXISTS procesos (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nombre TEXT,
-        fecha_creacion TEXT
+CREATE TABLE IF NOT EXISTS subprocesos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT,
+    proceso_id INTEGER,
+    fecha_creacion TEXT
+);
+
     );
     """))
     conn.execute(text("""
@@ -28,18 +31,18 @@ with engine.begin() as conn:
     );
     """))
     conn.execute(text("""
-    CREATE TABLE IF NOT EXISTS proyectos (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nombre TEXT,
-        responsable TEXT,
-        estado TEXT,
-        proceso_id INTEGER,
-        subproceso_id INTEGER,
-        proyectos_id INTERGER,
-        fecha_creacion TEXT,
-        fecha_proyeccion TEXT,
-        fecha_finalizacion TEXT
-    );
+  CREATE TABLE IF NOT EXISTS proyectos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT,
+    responsable TEXT,
+    estado TEXT,
+    proceso_id INTEGER,
+    subproceso_id INTEGER,
+    fecha_creacion TEXT,
+    fecha_proyeccion TEXT,
+    fecha_finalizacion TEXT
+);
+
     """))
     conn.execute(text("""
     CREATE TABLE IF NOT EXISTS tareas (
