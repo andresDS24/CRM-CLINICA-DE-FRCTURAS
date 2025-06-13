@@ -1,4 +1,4 @@
 streamlit
+sqlalchemy>=1.4
 pandas
 plotly
-sqlalchemy
