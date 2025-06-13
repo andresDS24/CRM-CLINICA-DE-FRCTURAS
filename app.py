@@ -56,6 +56,7 @@ with engine.begin() as conn:
     """))
 
 @st.cache_data
+
 def cargar_datos():
     procesos = pd.read_sql("SELECT * FROM procesos", engine)
     subprocesos = pd.read_sql("SELECT * FROM subprocesos", engine)
@@ -74,6 +75,7 @@ if st.sidebar.button("Crear Proceso") and nuevo_proc:
     with engine.begin() as conn:
         conn.execute(text("INSERT INTO procesos (nombre, fecha_creacion) VALUES (:n, :f)"), {"n": nuevo_proc, "f": datetime.now().isoformat()})
     st.cache_data.clear()
+    procesos, subprocesos, proyectos, tareas = cargar_datos()
     st.rerun()
 
 proc_sel = st.sidebar.selectbox("Seleccionar Proceso", procesos['nombre'].tolist() if not procesos.empty else [])
@@ -82,6 +84,7 @@ if st.sidebar.button("Eliminar Proceso") and proc_sel:
         pid = procesos[procesos['nombre'] == proc_sel]['id'].values[0]
         conn.execute(text("DELETE FROM procesos WHERE id = :pid"), {"pid": pid})
     st.cache_data.clear()
+    procesos, subprocesos, proyectos, tareas = cargar_datos()
     st.rerun()
 
 # Subprocesos
@@ -96,6 +99,7 @@ if st.sidebar.button("Crear Subproceso") and nuevo_subproc and proc_sel:
     with engine.begin() as conn:
         conn.execute(text("INSERT INTO subprocesos (nombre, proceso_id, fecha_creacion) VALUES (:n, :pid, :f)"), {"n": nuevo_subproc, "pid": proc_id, "f": datetime.now().isoformat()})
     st.cache_data.clear()
+    procesos, subprocesos, proyectos, tareas = cargar_datos()
     st.rerun()
 
 subproc_sel = st.sidebar.selectbox("Seleccionar Subproceso", subproc_df['nombre'].tolist() if not subproc_df.empty else [])
@@ -104,6 +108,7 @@ if st.sidebar.button("Eliminar Subproceso") and subproc_sel:
     with engine.begin() as conn:
         conn.execute(text("DELETE FROM subprocesos WHERE id = :spid"), {"spid": spid})
     st.cache_data.clear()
+    procesos, subprocesos, proyectos, tareas = cargar_datos()
     st.rerun()
 
 # Proyectos
@@ -120,6 +125,7 @@ if st.sidebar.button("Crear Proyecto") and nombre_proy and proc_sel and subproc_
             VALUES (:n, :r, 'Pendiente', :pid, :spid, :f, :p)"""),
             {"n": nombre_proy, "r": responsable_proy, "pid": pid, "spid": spid, "f": datetime.now().isoformat(), "p": fecha_proy.isoformat()})
     st.cache_data.clear()
+    procesos, subprocesos, proyectos, tareas = cargar_datos()
     st.rerun()
 
 proy_df = pd.DataFrame()
@@ -144,6 +150,7 @@ if st.sidebar.button("Crear Tarea") and proy_sel:
             VALUES (:pid, :d, :r, :i, :f, 'Pendiente', :fc, :fp)"""),
             {"pid": prid, "d": desc, "r": resp, "i": fini.isoformat(), "f": ffin.isoformat(), "fc": datetime.now().isoformat(), "fp": fproy.isoformat()})
     st.cache_data.clear()
+    procesos, subprocesos, proyectos, tareas = cargar_datos()
     st.rerun()
 
 # Visualización
@@ -176,4 +183,5 @@ else:
                          {"f": datetime.now().isoformat(), "id": prid})
         st.success("Proyecto Finalizado")
         st.cache_data.clear()
+        procesos, subprocesos, proyectos, tareas = cargar_datos()
         st.rerun()
