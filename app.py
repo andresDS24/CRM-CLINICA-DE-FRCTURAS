@@ -165,7 +165,7 @@ with st.sidebar.expander("✏️ Editar / Eliminar"):
             with engine.begin() as conn:
                 conn.execute(text("DELETE FROM tareas WHERE descripcion = :desc"), {"desc": eliminar_tarea})
             st.success("Tarea eliminada")
-            st.experimental_rerun()
+            st.rerun()
 with st.sidebar.form("form_tarea"):
     proyectos_disp = proyectos['nombre'].tolist() if not proyectos.empty else []
     proyecto_sel = st.selectbox("Proyecto", proyectos_disp)
