@@ -76,7 +76,7 @@ if st.sidebar.button("Crear Proceso") and nuevo_proc:
     st.cache_data.clear()
     st.rerun()
 
-proc_sel = st.sidebar.selectbox("Seleccionar Proceso", procesos['nombre'] if not procesos.empty else [])
+proc_sel = st.sidebar.selectbox("Seleccionar Proceso", procesos['nombre'].tolist() if not procesos.empty else [])
 if st.sidebar.button("Eliminar Proceso") and proc_sel:
     with engine.begin() as conn:
         pid = procesos[procesos['nombre'] == proc_sel]['id'].values[0]
@@ -86,16 +86,19 @@ if st.sidebar.button("Eliminar Proceso") and proc_sel:
 
 # Subprocesos
 st.sidebar.subheader("Subprocesos")
-subproc_df = subprocesos[subprocesos['proceso_id'] == procesos[procesos['nombre'] == proc_sel]['id'].values[0]] if proc_sel and not procesos.empty else pd.DataFrame()
+subproc_df = pd.DataFrame()
+if proc_sel:
+    proc_id = procesos[procesos['nombre'] == proc_sel]['id'].values[0]
+    subproc_df = subprocesos[subprocesos['proceso_id'] == proc_id]
+
 nuevo_subproc = st.sidebar.text_input("Nuevo Subproceso")
-if st.sidebar.button("Crear Subproceso") and nuevo_subproc:
-    pid = procesos[procesos['nombre'] == proc_sel]['id'].values[0]
+if st.sidebar.button("Crear Subproceso") and nuevo_subproc and proc_sel:
     with engine.begin() as conn:
-        conn.execute(text("INSERT INTO subprocesos (nombre, proceso_id, fecha_creacion) VALUES (:n, :pid, :f)"), {"n": nuevo_subproc, "pid": pid, "f": datetime.now().isoformat()})
+        conn.execute(text("INSERT INTO subprocesos (nombre, proceso_id, fecha_creacion) VALUES (:n, :pid, :f)"), {"n": nuevo_subproc, "pid": proc_id, "f": datetime.now().isoformat()})
     st.cache_data.clear()
     st.rerun()
 
-subproc_sel = st.sidebar.selectbox("Seleccionar Subproceso", subproc_df['nombre'] if not subproc_df.empty else [])
+subproc_sel = st.sidebar.selectbox("Seleccionar Subproceso", subproc_df['nombre'].tolist() if not subproc_df.empty else [])
 if st.sidebar.button("Eliminar Subproceso") and subproc_sel:
     spid = subproc_df[subproc_df['nombre'] == subproc_sel]['id'].values[0]
     with engine.begin() as conn:
@@ -119,8 +122,12 @@ if st.sidebar.button("Crear Proyecto") and nombre_proy and proc_sel and subproc_
     st.cache_data.clear()
     st.rerun()
 
-proy_df = proyectos[proyectos['subproceso_id'] == spid] if 'spid' in locals() else pd.DataFrame()
-proy_sel = st.sidebar.selectbox("Seleccionar Proyecto", proy_df['nombre'] if not proy_df.empty else [])
+proy_df = pd.DataFrame()
+if subproc_sel:
+    spid = subprocesos[subprocesos['nombre'] == subproc_sel]['id'].values[0]
+    proy_df = proyectos[proyectos['subproceso_id'] == spid]
+
+proy_sel = st.sidebar.selectbox("Seleccionar Proyecto", proy_df['nombre'].tolist() if not proy_df.empty else [])
 
 # Tareas
 st.sidebar.subheader("Tareas")
