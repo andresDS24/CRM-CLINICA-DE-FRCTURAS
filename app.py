@@ -82,8 +82,7 @@ with st.sidebar.form("form_proceso"):
                     st.success("Proceso y subproceso guardados.")
 st.cache_data.clear()
 st.rerun()
-                else:
-                    st.error("❌ El proceso no se registró correctamente. Verifica si ya existe o si hubo un error de conexión.")
+              st.error("❌ El proceso no se registró correctamente. Verifica si ya existe o si hubo un error de conexión.")
 
 st.sidebar.subheader("📁 Registro de Proyectos")
 with st.sidebar.form("form_proyecto"):
