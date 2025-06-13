@@ -23,7 +23,7 @@ with engine.begin() as conn:
     CREATE TABLE IF NOT EXISTS subprocesos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nombre TEXT,
-        proceso_id INTEGER,
+        subproceso_id INTEGER,
         fecha_creacion TEXT
     );
     """))
@@ -35,6 +35,7 @@ with engine.begin() as conn:
         estado TEXT,
         proceso_id INTEGER,
         subproceso_id INTEGER,
+        proyectos_id INTERGER,
         fecha_creacion TEXT,
         fecha_proyeccion TEXT,
         fecha_finalizacion TEXT
