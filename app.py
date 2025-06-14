@@ -109,7 +109,7 @@ proc_id = None
 
 if proc_sel:
     proc_id = procesos[procesos['nombre'] == proc_sel]['id'].values[0]
-   subproc_df = subprocesos[subprocesos['subproceso_id'] == proc_id]
+    subproc_df = subprocesos[subprocesos['proceso_id'] == proc_id]
 
 nuevo_subproc = st.sidebar.text_input("Nuevo Subproceso")
 if st.sidebar.button("Crear Subproceso") and nuevo_subproc.strip() and proc_sel:
